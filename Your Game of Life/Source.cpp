@@ -19,6 +19,8 @@ using namespace std;
 bool up = false, down = false, right = false, left = false;
 int  winWidth, winHeight; // current Window width and height
 
+enum states {START, LIFE};
+states game = START;
 bool cells[SIZE][SIZE] = { 0 }, newCells[SIZE][SIZE];
 
 int inBound(int x) {
@@ -166,7 +168,12 @@ void onKeyDown(unsigned char key, int x, int y)
 	// exit when ESC is pressed.
 	if (key == 27)
 		exit(0);
-
+	// start/pause "life" when ENTER is pressed.
+	if (key == 13)
+		if (game == START)
+			game = LIFE;
+		else
+			game = START;
 	// to refresh the window it calls display() function
 	glutPostRedisplay();
 }
@@ -228,6 +235,9 @@ void onClick(int button, int stat, int x, int y)
 {
 	// Write your codes here.
 
+	if(game == START)
+		cells[y / 10][x / 10] = 1;
+
 	// to refresh the window it calls display() function
 	glutPostRedisplay();
 }
@@ -275,17 +285,18 @@ void onTimer(int v) {
 
 	glutTimerFunc(TIMER_PERIOD, onTimer, 0);
 	// Write your codes here.
-
-	memcpy(newCells, cells, sizeof(cells));
-	for (int i = 0; i< SIZE; i++)
-		for (int j = 0; j < SIZE; j++) {
-			int n = countNeighbours(cells[i][j], i, j);
-			if (cells[i][j] && n < 2 || n>3)
-				newCells[i][j] = false;
-			else if (!cells[i][j] && n == 3)
-				newCells[i][j] = true;
-		}
-	memcpy(cells, newCells, sizeof(cells));
+	if (game == LIFE) {
+		memcpy(newCells, cells, sizeof(cells));
+		for (int i = 0; i < SIZE; i++)
+			for (int j = 0; j < SIZE; j++) {
+				int n = countNeighbours(cells[i][j], i, j);
+				if (cells[i][j] && n < 2 || n>3)
+					newCells[i][j] = false;
+				else if (!cells[i][j] && n == 3)
+					newCells[i][j] = true;
+			}
+		memcpy(cells, newCells, sizeof(cells));
+	}
 	// to refresh the window it calls display() function
 	glutPostRedisplay(); // display()
 
@@ -297,11 +308,7 @@ void Init() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	cells[1][2] = 1;
-	cells[2][2] = 1;
-	cells[3][2] = 1;
-	cells[3][1] = 1;
-	cells[2][0] = 1;
+	// Initialize cells to be alive like cells[pos1][pos2] = 1
 
 }
 
@@ -309,7 +316,7 @@ void main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glutCreateWindow("Conway's Game of Life");
+	glutCreateWindow("Your Game of Life");
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(onResize);
