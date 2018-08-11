@@ -7,12 +7,7 @@
 #include <vector>
 using namespace std;
 
-#define WINDOW_WIDTH  800
-#define WINDOW_HEIGHT 800
-#define STEP 10
-#define SIZE WINDOW_WIDTH/STEP
-
-#define TIMER_PERIOD  100 // Period for the timer.
+int WINDOW_WIDTH, WINDOW_HEIGHT, STEP, SIZE, TIMER_PERIOD;
 
 #define D2R 0.0174532
 
@@ -21,7 +16,7 @@ int  winWidth, winHeight; // current Window width and height
 
 enum states {START, LIFE};
 states game = START;
-bool cells[SIZE][SIZE] = { 0 }, newCells[SIZE][SIZE];
+bool **cells, **newCells;
 
 int inBound(int x) {
 	if (x == -1)
@@ -178,52 +173,6 @@ void onKeyDown(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-void onKeyUp(unsigned char key, int x, int y)
-{
-	// exit when ESC is pressed.
-	if (key == 27)
-		exit(0);
-
-	// to refresh the window it calls display() function
-	glutPostRedisplay();
-}
-
-//
-// Special Key like GLUT_KEY_F1, F2, F3,...
-// Arrow Keys, GLUT_KEY_UP, GLUT_KEY_DOWN, GLUT_KEY_RIGHT, GLUT_KEY_RIGHT
-//
-void onSpecialKeyDown(int key, int x, int y)
-{
-	// Write your codes here.
-	switch (key) {
-	case GLUT_KEY_UP: up = true; break;
-	case GLUT_KEY_DOWN: down = true; break;
-	case GLUT_KEY_LEFT: left = true; break;
-	case GLUT_KEY_RIGHT: right = true; break;
-	}
-
-	// to refresh the window it calls display() function
-	glutPostRedisplay();
-}
-
-//
-// Special Key like GLUT_KEY_F1, F2, F3,...
-// Arrow Keys, GLUT_KEY_UP, GLUT_KEY_DOWN, GLUT_KEY_RIGHT, GLUT_KEY_RIGHT
-//
-void onSpecialKeyUp(int key, int x, int y)
-{
-	// Write your codes here.
-	switch (key) {
-	case GLUT_KEY_UP: up = false; break;
-	case GLUT_KEY_DOWN: down = false; break;
-	case GLUT_KEY_LEFT: left = false; break;
-	case GLUT_KEY_RIGHT: right = false; break;
-	}
-
-	// to refresh the window it calls display() function
-	glutPostRedisplay();
-}
-
 //
 // When a click occurs in the window,
 // It provides which button
@@ -236,7 +185,7 @@ void onClick(int button, int stat, int x, int y)
 	// Write your codes here.
 
 	if(game == START)
-		cells[y / 10][x / 10] = 1;
+		cells[y / STEP][x / STEP] = 1;
 
 	// to refresh the window it calls display() function
 	glutPostRedisplay();
@@ -260,25 +209,31 @@ void onResize(int w, int h)
 	display(); // refresh window.
 }
 
-void onMoveDown(int x, int y) {
-	// Write your codes here.
-
-
-
-	// to refresh the window it calls display() function   
-	glutPostRedisplay();
+void arrCpy(bool **a1, bool **a2) {
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			a1[i][j] = a2[i][j];
 }
 
-// GLUT to OpenGL coordinate conversion:
-//   x2 = x1 - winWidth / 2
-//   y2 = winHeight / 2 - y1
-void onMove(int x, int y) {
-	// Write your codes here.
+// Function that checks all life/death conditions and applies them.
+// i and j are the coordinates of the cell
+void life(int i, int j) {
 
+	int n = countNeighbours(cells[i][j], i, j);
 
+	/*
+		TODO: Write instructions
+	*/
 
-	// to refresh the window it calls display() function
-	glutPostRedisplay();
+	if (cells[i][j]) {
+		if (n < 2 || n>3)
+			newCells[i][j] = false;
+	}
+
+	else {
+		if (n == 3)
+			newCells[i][j] = true;
+	}
 }
 
 void onTimer(int v) {
@@ -286,16 +241,12 @@ void onTimer(int v) {
 	glutTimerFunc(TIMER_PERIOD, onTimer, 0);
 	// Write your codes here.
 	if (game == LIFE) {
-		memcpy(newCells, cells, sizeof(cells));
+		arrCpy(newCells, cells);
 		for (int i = 0; i < SIZE; i++)
 			for (int j = 0; j < SIZE; j++) {
-				int n = countNeighbours(cells[i][j], i, j);
-				if (cells[i][j] && n < 2 || n>3)
-					newCells[i][j] = false;
-				else if (!cells[i][j] && n == 3)
-					newCells[i][j] = true;
+				life(i, j);
 			}
-		memcpy(cells, newCells, sizeof(cells));
+		arrCpy(cells, newCells);
 	}
 	// to refresh the window it calls display() function
 	glutPostRedisplay(); // display()
@@ -312,7 +263,29 @@ void Init() {
 
 }
 
+void setInitialData() {
+	printf("Welcome to \"Your Game of Life\"\nPlease enter required data to proceed.\n\nPlease enter desired window size: ");
+	scanf("%d %d", &WINDOW_WIDTH, &WINDOW_HEIGHT);
+	printf("Enter the size of the cell: ");
+	scanf("%d", &STEP);
+	SIZE = WINDOW_HEIGHT / STEP;
+	printf("Enter the timer period in ms: ");
+	scanf("%d", &TIMER_PERIOD);
+	cells = (bool **)malloc(SIZE * sizeof(bool *));
+	newCells = (bool **)malloc(SIZE * sizeof(bool *));
+	for (int i = 0; i < SIZE; i++) {
+		cells[i] = (bool *)malloc(SIZE * sizeof(bool));
+		newCells[i] = (bool *)malloc(SIZE * sizeof(bool));
+	}
+	for(int i = 0 ; i<SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			cells[i][j] = 0;
+}
+
 void main(int argc, char *argv[]) {
+
+	setInitialData();
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -325,17 +298,11 @@ void main(int argc, char *argv[]) {
 	// keyboard registration
 	//
 	glutKeyboardFunc(onKeyDown);
-	glutSpecialFunc(onSpecialKeyDown);
-
-	glutKeyboardUpFunc(onKeyUp);
-	glutSpecialUpFunc(onSpecialKeyUp);
 
 	//
 	// mouse registration
 	//
 	glutMouseFunc(onClick);
-	glutMotionFunc(onMoveDown);
-	glutPassiveMotionFunc(onMove);
 
 	glutTimerFunc(TIMER_PERIOD, onTimer, 0);
 
