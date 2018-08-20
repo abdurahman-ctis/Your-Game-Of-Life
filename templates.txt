@@ -1,0 +1,12 @@
+
+NAME:Classic:
+    ALIVE:n<2 OR n>3
+    DEAD:n==3
+end
+
+    
+NAME:Test:
+    ALIVE:n==3
+    DEAD:n<2 OR n>5 AND n<15
+end
+    
