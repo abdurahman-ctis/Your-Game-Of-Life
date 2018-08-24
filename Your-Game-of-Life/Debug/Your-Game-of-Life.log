@@ -1,0 +1,9 @@
+﻿  Source.cpp
+c:\users\aatak\desktop\your-game-of-life\your-game-of-life\source.cpp(268): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1270): note: see declaration of 'scanf'
+c:\users\aatak\desktop\your-game-of-life\your-game-of-life\source.cpp(270): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1270): note: see declaration of 'scanf'
+c:\users\aatak\desktop\your-game-of-life\your-game-of-life\source.cpp(273): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1270): note: see declaration of 'scanf'
+  Your-Game-of-Life.vcxproj -> C:\Users\aatak\Desktop\Your-Game-Of-Life\Your-Game-of-Life\Debug\Your-Game-of-Life.exe
+  Your-Game-of-Life.vcxproj -> C:\Users\aatak\Desktop\Your-Game-Of-Life\Your-Game-of-Life\Debug\Your-Game-of-Life.pdb (Full PDB)

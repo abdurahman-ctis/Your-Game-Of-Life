@@ -5,8 +5,3 @@ NAME:Classic:
 end
 
     
-NAME:Test:
-    ALIVE:n==3
-    DEAD:n<2 OR n>5 AND n<15
-end
-    
