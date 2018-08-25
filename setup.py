@@ -77,7 +77,7 @@ def choose():
         f = open(source,'w')
         f.write(newdata)
         f.close()
-        print("Chosen template was uploaded to the Source.cpp file.")
+        print("Chosen template was loaded to the Source.cpp file.")
         
     else:
         choose()
